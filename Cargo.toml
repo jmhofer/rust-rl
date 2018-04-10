@@ -1,0 +1,8 @@
+[package]
+name = "rl"
+version = "0.1.0"
+authors = ["Joachim Hofer <jmhofer.github@johoop.de>"]
+license = "MIT"
+readme = "README.md"
+
+[dependencies]

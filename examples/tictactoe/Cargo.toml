@@ -1,0 +1,7 @@
+[package]
+name = "rl-tictactoe"
+version = "0.1.0"
+authors = ["Joachim Hofer <jmhofer.github@johoop.de>"]
+
+[dependencies]
+rl = { path = "../../" }
