@@ -5,3 +5,4 @@ authors = ["Joachim Hofer <jmhofer.github@johoop.de>"]
 
 [dependencies]
 rl = { path = "../../" }
+rand = "0.4.2"
