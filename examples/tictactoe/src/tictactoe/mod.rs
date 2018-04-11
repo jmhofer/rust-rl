@@ -22,14 +22,19 @@ pub struct GameResult {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Game {
     pub board: [Option<Color>; 9],
-    pub to_move: Color
+    pub to_move: Color,
+    pub result: GameResult
 }
 
 impl Game {
     pub fn new() -> Game {
         Game {
             board: [None; 9],
-            to_move: Color::X
+            to_move: Color::X,
+            result: GameResult {
+                has_ended: false,
+                winner: None
+            }
         }
     }
 
@@ -37,6 +42,7 @@ impl Game {
         let mut next = self.clone();
         next.board[action] = Some(next.to_move);
         next.to_move = next.to_move.switch();
+        next.result = next.result();
         next
     }
 

@@ -20,9 +20,9 @@ pub trait Environment {
 
 pub trait Agent<State, Action> {
 
-    fn get_q(&self, state: State, action: &Action) -> f64;
-    fn update_q(&mut self, state: State, action: &Action, value: f64);
+    fn get_q(&self, state: &State, action: &Action) -> f64;
+    fn update_q(&mut self, state: &State, action: &Action, value: f64);
 
-    fn get_policy(&self, state: State, actions: &[Action]) -> Action;
+    fn get_policy(&self, state: &State, actions: &[Action]) -> Action;
     // TODO updating the policy
 }
