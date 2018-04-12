@@ -54,29 +54,47 @@ impl TicTacToeAgent {
         }
     }
 
-    fn self_play(&mut self, should_render: bool) {
+    fn self_play(&mut self, should_render: bool, epsilon: f64) -> Option<Color> {
         let mut game = TicTacToeEnv::new();
+        self.epsilon = epsilon;
         while !game.result.has_ended {
             let my_color = game.to_move;
             let next_actions = game.actions();
             let chosen_action = self.get_policy(&game, &next_actions);
             let (next_turn, reward) = TicTacToeEnv::take_action(&game, &chosen_action);
+
+            // s_t   = game
+            // r_t   = reward
+            // s_t+1 = next_turn
+
+            // println!("reward: {}", agent_reward);
+
+            let new_v = if next_turn.result.has_ended {
+                reward
+            } else {
+                reward + (1.0 - self.gamma) * self.get_v(&game) + self.gamma * self.get_v(&next_turn)
+            };
+
+            // println!("{} -> {}", self.get_v(&game), new_v);
+            self.update_v(&game, new_v);
+
             game = next_turn;
-            // TODO update Q(s, a)
+
             if should_render {
                 TicTacToeEnv::render(&game);
             }
         }
+        game.result.winner
     }
 }
 
 impl Agent<Game, usize> for TicTacToeAgent {
-    fn get_q(&self, game: &Game, action: &usize) -> f64 {
-        *self.v.get(&game.take_action(*action).hash()).unwrap_or(&0.0)
+    fn get_v(&self, game: &Game) -> f64 {
+        *self.v.get(&game.hash()).unwrap_or(&0.0)
     }
 
-    fn update_q(&mut self, game: &Game, action: &usize, value: f64) {
-        self.v.insert(game.take_action(*action).hash(), value);
+    fn update_v(&mut self, game: &Game, value: f64) {
+        self.v.insert(game.hash(), value);
     }
 
     // epsilon-greedy policy
@@ -86,12 +104,12 @@ impl Agent<Game, usize> for TicTacToeAgent {
             *rng.choose(actions).unwrap()
         } else {
             let mut chosen = actions[0];
-            let mut max_q = self.get_q(game, &chosen);
-            for action in actions[1..].iter() {
-                let q = self.get_q(game, action);
-                if q > max_q {
-                    max_q = q;
-                    chosen = *action;
+            let mut best_v = self.get_v(&game.take_action(chosen));
+            for &action in actions[1..].iter() {
+                let v = self.get_v(&game.take_action(action));
+                if game.to_move == Color::X && v > best_v || game.to_move == Color::O && v < best_v {
+                    best_v = v;
+                    chosen = action;
                 }
             }
             chosen
@@ -100,8 +118,15 @@ impl Agent<Game, usize> for TicTacToeAgent {
 }
 
 fn main() {
-    println!("Hello, world!");
-
-    let mut agent = TicTacToeAgent::new(0.9, 0.1);
-    agent.self_play(true);
+    let mut agent = TicTacToeAgent::new(0.9, 0.2);
+    for _i in 0..100000 {
+        agent.self_play(false, 0.2);
+    }
+    let mut draws = 0;
+    for _i in 0..1000 {
+        if agent.self_play(true, 0.0).is_none() {
+            draws += 1;
+        }
+    }
+    println!("draws: {}", draws);
 }

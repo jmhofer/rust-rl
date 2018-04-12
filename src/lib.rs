@@ -1,11 +1,3 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
-
 pub trait Environment {
     type Action;
     type State;
@@ -20,8 +12,8 @@ pub trait Environment {
 
 pub trait Agent<State, Action> {
 
-    fn get_q(&self, state: &State, action: &Action) -> f64;
-    fn update_q(&mut self, state: &State, action: &Action, value: f64);
+    fn get_v(&self, state: &State) -> f64;
+    fn update_v(&mut self, state: &State, value: f64);
 
     fn get_policy(&self, state: &State, actions: &[Action]) -> Action;
     // TODO updating the policy

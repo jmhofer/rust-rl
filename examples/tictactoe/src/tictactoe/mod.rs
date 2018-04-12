@@ -88,7 +88,7 @@ impl Game {
                     return GameResult { has_ended: true, winner: self.board[i] };
                 }
                 if self.board[3 * i].is_some() && self.board[3 * i] == self.board[3 * i + 1] && self.board[3 * i] == self.board[3 * i + 2] {
-                    return GameResult { has_ended: true, winner: self.board[i] };
+                    return GameResult { has_ended: true, winner: self.board[3 * i] };
                 }
             }
             if self.board[4].is_some() && (self.board[0] == self.board[4] && self.board[8] == self.board[4] || self.board[2] == self.board[4] && self.board[6] == self.board[4]) {
